@@ -19,11 +19,20 @@ class ProductController extends AbstractController
   {}
   
   // GET ALL
-  #[Route('/api/product/all', name: 'app_product_all')]
+  #[Route('/api/product/all', name: 'app_product_get_all', methods: 'GET')]
   public function getAll(): JsonResponse
   {
     $jsonProductList = $this->serializer->serialize($this->productRepository->findAll(), 'json');
 
     return new JsonResponse($jsonProductList, Response::HTTP_OK, [], true);
+  }
+
+  // GET ONE
+  #[Route('/api/product/{id}', name: 'app_product_get_one', methods: 'GET')]
+  public function getOne(Product $product): JsonResponse
+  {
+    $jsonProduct = $this->serializer->serialize($product, 'json');
+
+    return new JsonResponse($jsonProduct, Response::HTTP_OK, [], true);
   }
 }
