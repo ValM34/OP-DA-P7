@@ -12,31 +12,32 @@ class Customer
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['customers'])]
+    #[Groups(['customers', 'customer'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['customers'])]
+    #[Groups(['customers', 'customer'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['customers'])]
+    #[Groups(['customers', 'customer'])]
     private ?string $surname = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['customers'])]
+    #[Groups(['customers', 'customer'])]
     private ?string $email = null;
 
     #[ORM\Column]
-    #[Groups(['customers'])]
+    #[Groups(['customers', 'customer'])]
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\Column]
-    #[Groups(['customers'])]
+    #[Groups(['customers', 'customer'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'customers')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['customer'])]
     private ?Vendor $vendor = null;
 
     public function getId(): ?int
