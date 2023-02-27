@@ -22,7 +22,7 @@ class Vendor
     #[Groups(['customers', 'customer'])]
     private ?string $name = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, unique: true)]
     #[Groups(['customers', 'customer'])]
     private ?string $email = null;
 
