@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: VendorRepository::class)]
 class Vendor
@@ -14,24 +15,31 @@ class Vendor
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['customers'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['customers'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['customers'])]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['customers'])]
     private ?string $password = null;
 
     #[ORM\OneToMany(mappedBy: 'vendor', targetEntity: Customer::class, orphanRemoval: true)]
+    #[Groups(['customers'])]
     private Collection $customers;
 
     #[ORM\Column]
+    #[Groups(['customers'])]
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\Column]
+    #[Groups(['customers'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     public function __construct()

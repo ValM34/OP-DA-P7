@@ -11,6 +11,7 @@ use App\Entity\Customer;
 use App\Entity\Vendor;
 use App\Repository\CustomerRepository;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Serializer\Context\Normalizer\ObjectNormalizerContextBuilder;
 
 class CustomerController extends AbstractController
 {
@@ -24,8 +25,11 @@ class CustomerController extends AbstractController
   #[Route('/api/vendor/{id}', name: 'app_customer_get_all')]
   public function getCustomersByVendor(Vendor $vendor): JsonResponse
   {
-    dd($vendor->getCustomers());
-    $jsonCustomers = $this->serializer->serialize($customers, 'json');
+    $context = (new ObjectNormalizerContextBuilder())
+      ->withGroups('customers')
+      ->toArray()
+    ;
+    $jsonCustomers = $this->serializer->serialize($vendor, 'json', $context);
 
     return new JsonResponse($jsonCustomers, Response::HTTP_OK, [], true);
   }
