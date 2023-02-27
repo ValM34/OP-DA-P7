@@ -5,6 +5,7 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\Product;
 use App\Entity\Customer;
@@ -12,12 +13,14 @@ use App\Entity\Vendor;
 use App\Repository\CustomerRepository;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\Context\Normalizer\ObjectNormalizerContextBuilder;
+use App\Service\CustomerServiceInterface;
 
 class CustomerController extends AbstractController
 {
   public function __construct(
     private CustomerRepository $customerRepository,
-    private SerializerInterface $serializer
+    private SerializerInterface $serializer,
+    private CustomerServiceInterface $customerService
   )
   {}
   
@@ -45,5 +48,14 @@ class CustomerController extends AbstractController
     $jsonCustomer = $this->serializer->serialize($customer, 'json', $context);
 
     return new JsonResponse($jsonCustomer, Response::HTTP_OK, [], true);
+  }
+
+  // CREATE
+  #[Route('/api/customer/add/{id}', name: 'app_customer_add', methods: ['POST'])]
+  public function add(Customer $customer, Request $request, int $id)
+  {
+    $customer = $this->serializer->deserialize($request->getContent(), Customer::class, 'json');
+    $customer = $this->customerService->create($customer, $id);
+    dd($customer);
   }
 }

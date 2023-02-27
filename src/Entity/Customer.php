@@ -23,7 +23,7 @@ class Customer
     #[Groups(['customers', 'customer'])]
     private ?string $surname = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, unique: true)]
     #[Groups(['customers', 'customer'])]
     private ?string $email = null;
 
@@ -36,7 +36,7 @@ class Customer
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'customers')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     #[Groups(['customer'])]
     private ?Vendor $vendor = null;
 
