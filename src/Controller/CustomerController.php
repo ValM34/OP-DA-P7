@@ -56,6 +56,21 @@ class CustomerController extends AbstractController
   {
     $customer = $this->serializer->deserialize($request->getContent(), Customer::class, 'json');
     $customer = $this->customerService->create($customer, $id);
-    dd($customer);
+    $context = (new ObjectNormalizerContextBuilder())
+      ->withGroups('customer')
+      ->toArray()
+    ;
+    $jsonCustomer = $this->serializer->serialize($customer, 'json', $context);
+
+    return new JsonResponse($jsonCustomer, Response::HTTP_OK, [], true);
+  }
+
+  // DELETE
+  #[Route('/api/customer/delete/{id}', name: 'app_customer_delete', methods: ['DELETE'])]
+  public function delete(Customer $customer)
+  {
+    $this->customerService->delete($customer);
+
+    return new JsonResponse(null, Response::HTTP_NO_CONTENT);
   }
 }

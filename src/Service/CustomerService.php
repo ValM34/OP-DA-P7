@@ -24,7 +24,6 @@ class CustomerService implements CustomerServiceInterface
     // @TODO modifier quand j'aurai mis en place le JWT pour éviter de faire cet appel à la BDD inutile
     // Faudra aussi gérer le cas où l'email existe déjà
     $vendor = $this->entityManager->getRepository(Vendor::class)->find($vendorId);
-    dump($vendor);
     $customer
       ->setUpdatedAt($date)
       ->setCreatedAt($date)
@@ -34,5 +33,12 @@ class CustomerService implements CustomerServiceInterface
     $this->entityManager->flush();
     
     return $customer;
+  }
+
+  public function delete(Customer $customer)
+  {
+    $this->entityManager->remove($customer);
+    $this->entityManager->flush();
+    // @TODO Peut-être retourner une réponse ici
   }
 }
