@@ -15,19 +15,19 @@ class Vendor
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['customers'])]
+    #[Groups(['customers', 'customer'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['customers'])]
+    #[Groups(['customers', 'customer'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['customers'])]
+    #[Groups(['customers', 'customer'])]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['customers'])]
+    #[Groups(['customers', 'customer'])]
     private ?string $password = null;
 
     #[ORM\OneToMany(mappedBy: 'vendor', targetEntity: Customer::class, orphanRemoval: true)]
@@ -35,11 +35,11 @@ class Vendor
     private Collection $customers;
 
     #[ORM\Column]
-    #[Groups(['customers'])]
+    #[Groups(['customers', 'customer'])]
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\Column]
-    #[Groups(['customers'])]
+    #[Groups(['customers', 'customer'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     public function __construct()
