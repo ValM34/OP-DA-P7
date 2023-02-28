@@ -6,13 +6,15 @@ use App\Entity\Customer;
 use App\Entity\Vendor;
 use \DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 class CustomerService implements CustomerServiceInterface
 {
   private $dateTimeImmutable;
 
   public function __construct(
-    private EntityManagerInterface $entityManager
+    private EntityManagerInterface $entityManager,
+    private TagAwareCacheInterface $cache
   )
   {
     $this->dateTimeImmutable = new DateTimeImmutable();
@@ -35,6 +37,7 @@ class CustomerService implements CustomerServiceInterface
 
   public function delete(Customer $customer)
   {
+    $this->cache->invalidateTags(['getCustomersByVendor', 'getCustomerByVendor']);
     $this->entityManager->remove($customer);
     $this->entityManager->flush();
     // @TODO Peut-être retourner une réponse ici
