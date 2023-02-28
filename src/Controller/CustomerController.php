@@ -52,7 +52,7 @@ class CustomerController extends AbstractController
 
   // CREATE
   #[Route('/api/customer/add', name: 'app_customer_add', methods: ['POST'])]
-  public function add(Customer $customer, Request $request)
+  public function create(Customer $customer, Request $request)
   {
     $customer = $this->serializer->deserialize($request->getContent(), Customer::class, 'json');
     $customer = $this->customerService->create($customer, $this->getUser());
