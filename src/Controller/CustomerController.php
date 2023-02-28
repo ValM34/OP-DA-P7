@@ -14,6 +14,8 @@ use App\Repository\CustomerRepository;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\Context\Normalizer\ObjectNormalizerContextBuilder;
 use App\Service\CustomerServiceInterface;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
+use Symfony\Contracts\Cache\ItemInterface;
 
 class CustomerController extends AbstractController
 {
@@ -26,26 +28,40 @@ class CustomerController extends AbstractController
   
   // GET CUSTOMERS BY VENDOR
   #[Route('/api/vendor', name: 'app_customer_get_all', methods: ['GET'])]
-  public function getCustomersByVendor(): JsonResponse
-  {    
-    $context = (new ObjectNormalizerContextBuilder())
-      ->withGroups('customers')
-      ->toArray()
-    ;
-    $jsonCustomers = $this->serializer->serialize($this->getUser(), 'json', $context);
+  public function getCustomersByVendor(Request $request, TagAwareCacheInterface $cachePool, CustomerRepository $customerRepository, SerializerInterface $serializer): JsonResponse
+  {
+    $page = $request->get('page', 1);
+    $limit = $request->get('limit', 3);
+    $idCache = "getCustomersByVendor-" . $page . "-" . $limit;
+    $jsonCustomers = $cachePool->get($idCache, function (ItemInterface $item) use ($customerRepository, $page, $limit, $serializer) {
+      $item->tag("getCustomersByVendor");
+      $context = (new ObjectNormalizerContextBuilder())
+        ->withGroups('customers')
+        ->toArray()
+      ;
+      $customerList = $this->customerRepository->findAllWithPagination($page, $limit, $this->getUser());
+      
+      return $serializer->serialize($customerList, 'json', $context);
+    });
 
     return new JsonResponse($jsonCustomers, Response::HTTP_OK, [], true);
   }
 
   // GET CUSTOMER BY VENDOR
   #[Route('/api/customer/{id}', name: 'app_customer_get_one', methods: ['GET'])]
-  public function getCustomerByVendor(Customer $customer)
+  public function getCustomerByVendor(Request $request, Customer $customer, TagAwareCacheInterface $cachePool, SerializerInterface $serializer)
   {
-    $context = (new ObjectNormalizerContextBuilder())
-      ->withGroups('customer')
-      ->toArray()
-    ;
-    $jsonCustomer = $this->serializer->serialize($customer, 'json', $context);
+    $idCache = 'getCustomerByVendor-' . $customer->getId();
+    $jsonCustomer = $cachePool->get($idCache, function (ItemInterface $item) use ($customer, $serializer) {
+      $item->tag("getCustomerByVendor");
+      $context = (new ObjectNormalizerContextBuilder())
+        ->withGroups('customers')
+        ->toArray()
+      ;
+      
+      return $serializer->serialize($customer, 'json', $context);
+    });
+    
 
     return new JsonResponse($jsonCustomer, Response::HTTP_OK, [], true);
   }
