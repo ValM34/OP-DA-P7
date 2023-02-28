@@ -18,12 +18,10 @@ class CustomerService implements CustomerServiceInterface
     $this->dateTimeImmutable = new DateTimeImmutable();
   }
 
-  public function create(Customer $customer, int $vendorId): ?Customer
+  public function create(Customer $customer, Vendor $vendor): ?Customer
   {
     $date = $this->dateTimeImmutable;
-    // @TODO modifier quand j'aurai mis en place le JWT pour éviter de faire cet appel à la BDD inutile
-    // Faudra aussi gérer le cas où l'email existe déjà
-    $vendor = $this->entityManager->getRepository(Vendor::class)->find($vendorId);
+    // @TODO gestion erreur : Faudra aussi gérer le cas où l'email existe déjà
     $customer
       ->setUpdatedAt($date)
       ->setCreatedAt($date)
