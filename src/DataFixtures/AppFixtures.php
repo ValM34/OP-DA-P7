@@ -8,13 +8,16 @@ use \DateTimeImmutable;
 use App\Entity\Product;
 use App\Entity\Vendor;
 use App\Entity\Customer;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AppFixtures extends Fixture
 {
   private $dateTimeImmutable;
   private $product;
 
-  public function __construct()
+  public function __construct(
+    private UserPasswordHasherInterface $userPasswordHasher
+  )
   {
     $this->dateTimeImmutable = new DateTimeImmutable();
   }
@@ -33,21 +36,34 @@ class AppFixtures extends Fixture
       ;
       $manager->persist($product);
     }
-
-    for($i = 0; $i < 10; $i++){
-      $vendor = new Vendor();
-      $vendor
-        ->setName('vendeur' . + $i)
-        ->setEmail('email@' . $i . '.com')
-        ->setPassword('password')
-        ->setUpdatedAt($date)
-        ->setCreatedAt($date)
-      ;
-      $manager->persist($vendor);
-      $listVendor[] = $vendor;
+    
+    for ($i = 0; $i < 10; $i++) {
+      if ($i < 5) {
+        $vendor = new Vendor();
+        $vendor
+          ->setName('Name' . $i)
+          ->setEmail('e@mail' . $i . '.fr')
+          ->setRoles(["ROLE_USER"])
+          ->setPassword($this->userPasswordHasher->hashPassword($vendor, "password"))
+          ->setUpdatedAt($date)
+          ->setCreatedAt($date);
+        $manager->persist($vendor);
+        $listVendor[] = $vendor;
+      } else {
+        $vendor = new Vendor();
+        $vendor
+          ->setName('Name' . $i)
+          ->setEmail('e@mail' . $i . '.fr')
+          ->setRoles(["ROLE_ADMIN"])
+          ->setPassword($this->userPasswordHasher->hashPassword($vendor, "password"))
+          ->setUpdatedAt($date)
+          ->setCreatedAt($date);
+        $manager->persist($vendor);
+        $listVendor[] = $vendor;
+      }
     }
 
-    for($i = 0; $i < 30; $i++){
+    for ($i = 0; $i < 30; $i++) {
       $customer = new Customer();
       $customer
         ->setName('name' . $i)
@@ -55,8 +71,7 @@ class AppFixtures extends Fixture
         ->setEmail('emailcustomer@' . $i . '.com')
         ->setUpdatedAt($date)
         ->setCreatedAt($date)
-        ->setVendor($listVendor[array_rand($listVendor)]);
-      ;
+        ->setVendor($listVendor[array_rand($listVendor)]);;
       $manager->persist($customer);
     }
     $manager->flush();

@@ -25,14 +25,14 @@ class CustomerController extends AbstractController
   {}
   
   // GET CUSTOMERS BY VENDOR
-  #[Route('/api/vendor/{id}', name: 'app_customer_get_all', methods: ['GET'])]
-  public function getCustomersByVendor(Vendor $vendor): JsonResponse
-  {
+  #[Route('/api/vendor', name: 'app_customer_get_all', methods: ['GET'])]
+  public function getCustomersByVendor(): JsonResponse
+  {    
     $context = (new ObjectNormalizerContextBuilder())
       ->withGroups('customers')
       ->toArray()
     ;
-    $jsonCustomers = $this->serializer->serialize($vendor, 'json', $context);
+    $jsonCustomers = $this->serializer->serialize($this->getUser(), 'json', $context);
 
     return new JsonResponse($jsonCustomers, Response::HTTP_OK, [], true);
   }
@@ -51,11 +51,11 @@ class CustomerController extends AbstractController
   }
 
   // CREATE
-  #[Route('/api/customer/add/{id}', name: 'app_customer_add', methods: ['POST'])]
-  public function add(Customer $customer, Request $request, int $id)
+  #[Route('/api/customer/add', name: 'app_customer_add', methods: ['POST'])]
+  public function add(Customer $customer, Request $request)
   {
     $customer = $this->serializer->deserialize($request->getContent(), Customer::class, 'json');
-    $customer = $this->customerService->create($customer, $id);
+    $customer = $this->customerService->create($customer, $this->getUser());
     $context = (new ObjectNormalizerContextBuilder())
       ->withGroups('customer')
       ->toArray()
