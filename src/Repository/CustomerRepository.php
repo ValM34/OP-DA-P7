@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Customer;
+use App\Entity\Vendor;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -37,6 +38,22 @@ class CustomerRepository extends ServiceEntityRepository
         if ($flush) {
             $this->getEntityManager()->flush();
         }
+    }
+
+    // @TODO j'arrive pas à avoir le vendor dans le résultat, sauf quand je mets le groupe customer mais 
+    // ça rend le vendor autant de fois que de résultat
+    public function findAllWithPagination($page, $limit, Vendor $vendor)
+    {
+      $queryBuilder = $this->createQueryBuilder('c')
+        ->select('c', 'v')
+        ->leftJoin('c.vendor', 'v')
+        ->andWhere('v = :vendor')
+        ->setParameter('vendor', $vendor)
+        ->setFirstResult(($page - 1) * $limit)
+        ->setMaxResults($limit)
+      ;
+
+      return $queryBuilder->getQuery()->getResult();
     }
 
 //    /**
