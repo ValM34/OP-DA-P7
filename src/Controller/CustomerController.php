@@ -17,6 +17,9 @@ use Symfony\Component\Serializer\Context\Normalizer\ObjectNormalizerContextBuild
 use App\Service\CustomerServiceInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use Nelmio\ApiDocBundle\Annotation\Security;
+use OpenApi\Annotations as OA;
 
 class CustomerController extends AbstractController
 {
@@ -27,6 +30,37 @@ class CustomerController extends AbstractController
   )
   {}
   
+  /**
+  * Cette méthode permet de récupérer les clients liés à un vendeur.
+  *
+  * @OA\Response(
+  *     response=200,
+  *     description="Retourne la liste des clients liés à un vendeur",
+  *     @OA\JsonContent(
+  *        type="array",
+  *        @OA\Items(ref=@Model(type=Vendor::class, groups={"customers"}))
+  *     )
+  * )
+  * @OA\Parameter(
+  *     name="page",
+  *     in="query",
+  *     description="La page que l'on veut récupérer",
+  *     @OA\Schema(type="int")
+  * )
+  *
+  * @OA\Parameter(
+  *     name="limit",
+  *     in="query",
+  *     description="Le nombre d'éléments que l'on veut récupérer",
+  *     @OA\Schema(type="int")
+  * )
+  * @OA\Tag(name="Customer")
+  *
+  * @param ProductRepository $productRepository
+  * @param SerializerInterface $serializer
+  * @param Request $request
+  * @return JsonResponse
+  */
   // GET CUSTOMERS BY VENDOR
   #[Route('/api/vendor', name: 'app_customer_get_all', methods: ['GET'])]
   public function getCustomersByVendor(Request $request, TagAwareCacheInterface $cachePool, CustomerRepository $customerRepository, SerializerInterface $serializer, SerializationContext $serializationContext): JsonResponse
@@ -45,6 +79,25 @@ class CustomerController extends AbstractController
     return new JsonResponse($jsonCustomers, Response::HTTP_OK, [], true);
   }
 
+  // @TODO : n'importe quel vendeur peut voir n'importe quel client, ce n'est pas souhaitable, il faut le modifier
+  /**
+  * Cette méthode permet de récupérer les clients liés à un vendeur.
+  *
+  * @OA\Response(
+  *     response=200,
+  *     description="Retourne un client lié à un vendeur en fonction de l'identifiant du client.",
+  *     @OA\JsonContent(
+  *        type="array",
+  *        @OA\Items(ref=@Model(type=Customer::class, groups={"customers"}))
+  *     )
+  * )
+  * @OA\Tag(name="Customer")
+  *
+  * @param ProductRepository $productRepository
+  * @param SerializerInterface $serializer
+  * @param Request $request
+  * @return JsonResponse
+  */
   // GET CUSTOMER BY VENDOR
   #[Route('/api/customer/{id}', name: 'app_customer_get_one', methods: ['GET'])]
   public function getCustomerByVendor(Request $request, Customer $customer, TagAwareCacheInterface $cachePool, SerializerInterface $serializer, SerializationContext $serializationContext)
@@ -61,6 +114,25 @@ class CustomerController extends AbstractController
     return new JsonResponse($jsonCustomer, Response::HTTP_OK, [], true);
   }
 
+  // @TODO : Voir si je dois faire quelque chose de spécial sur cette route car ça va créer un utilisateur.
+  /**
+  * Cette méthode permet d'ajouter un client lié à un vendeur.
+  *
+  * @OA\Response(
+  *     response=200,
+  *     description="Retourne le client nouvellement créé.",
+  *     @OA\JsonContent(
+  *        type="array",
+  *        @OA\Items(ref=@Model(type=Customer::class, groups={"customers"}))
+  *     )
+  * )
+  * @OA\Tag(name="Customer")
+  *
+  * @param ProductRepository $productRepository
+  * @param SerializerInterface $serializer
+  * @param Request $request
+  * @return JsonResponse
+  */
   // CREATE
   #[Route('/api/customer/add', name: 'app_customer_add', methods: ['POST'])]
   public function create(Customer $customer, Request $request, SerializationContext $serializationContext)
@@ -73,6 +145,26 @@ class CustomerController extends AbstractController
     return new JsonResponse($jsonCustomer, Response::HTTP_OK, [], true);
   }
 
+  // @TODO : Je pense pas que j'ai vérifié si le client est lié au vendeur, ce qui est problématique  car un client non lié
+  // au vendeur pourrait être supprimé par un autre vendeur.
+  /**
+  * Cette méthode permet de supprimer un client lié à un vendeur.
+  *
+  * @OA\Response(
+  *     response=200,
+  *     description="Retourne le client nouvellement créé.",
+  *     @OA\JsonContent(
+  *        type="array",
+  *        @OA\Items(ref=@Model(type=Customer::class))
+  *     )
+  * )
+  * @OA\Tag(name="Customer")
+  *
+  * @param ProductRepository $productRepository
+  * @param SerializerInterface $serializer
+  * @param Request $request
+  * @return JsonResponse
+  */
   // @TODO : Voir avec Laurent s'il faut ajouter de l'auto découvrabilité sur cette route
   // DELETE
   #[Route('/api/customer/delete/{id}', name: 'app_customer_delete', methods: ['DELETE'])]
