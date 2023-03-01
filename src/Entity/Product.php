@@ -4,6 +4,27 @@ namespace App\Entity;
 
 use App\Repository\ProductRepository;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Groups;
+use Hateoas\Configuration\Annotation as Hateoas;
+
+ /**
+ * @Hateoas\Relation(
+ *      "self",
+ *      href = @Hateoas\Route(
+ *          "app_product_get_all",
+ *          parameters = { "id" = "expr(object.getId())" }
+ *      ),
+ *      exclusion = @Hateoas\Exclusion(groups="product")
+ * )
+ * @Hateoas\Relation(
+ *      "self",
+ *      href = @Hateoas\Route(
+ *          "app_product_get_one",
+ *          parameters = { "id" = "expr(object.getId())" }
+ *      ),
+ *      exclusion = @Hateoas\Exclusion(groups="products")
+ * )
+ */
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 class Product
@@ -11,21 +32,27 @@ class Product
   #[ORM\Id]
   #[ORM\GeneratedValue]
   #[ORM\Column]
+  #[Groups(['product', 'products'])]
   private ?int $id = null;
 
   #[ORM\Column(length: 255)]
+  #[Groups(['product', 'products'])]
   private ?string $name = null;
 
   #[ORM\Column(length: 255)]
+  #[Groups(['product', 'products'])]
   private ?string $description = null;
 
   #[ORM\Column]
+  #[Groups(['product', 'products'])]
   private ?int $price = null;
 
   #[ORM\Column]
+  #[Groups(['product', 'products'])]
   private ?\DateTimeImmutable $updatedAt = null;
 
   #[ORM\Column]
+  #[Groups(['product', 'products'])]
   private ?\DateTimeImmutable $createdAt = null;
 
   public function getId(): ?int
