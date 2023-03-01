@@ -4,7 +4,46 @@ namespace App\Entity;
 
 use App\Repository\CustomerRepository;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\Groups;
+use Hateoas\Configuration\Annotation as Hateoas;
+
+ /**
+ * @Hateoas\Relation(
+ *      "customer",
+ *      href = @Hateoas\Route(
+ *          "app_customer_get_one",
+ *          parameters = { "id" = "expr(object.getId())" }
+ *      ),
+ *      exclusion = @Hateoas\Exclusion(groups="customers")
+ * ) 
+ * @Hateoas\Relation(
+ *      "vendor",
+ *      href = @Hateoas\Route(
+ *          "app_customer_get_all",
+ *          parameters = { "id" = "expr(object.getVendor().getId())" }
+ *      ),
+ *      exclusion = @Hateoas\Exclusion(groups="customers")
+ * )
+ * @Hateoas\Relation(
+ *      "self",
+ *      href = @Hateoas\Route(
+ *          "app_customer_get_one",
+ *          parameters = { "id" = "expr(object.getId())" }
+ *      ),
+ *      exclusion = @Hateoas\Exclusion(groups="customer")
+ * ) 
+ * @Hateoas\Relation(
+ *      "vendor",
+ *      href = @Hateoas\Route(
+ *          "app_customer_get_all",
+ *          parameters = { "id" = "expr(object.getVendor().getId())" }
+ *      ),
+ *      exclusion = @Hateoas\Exclusion(groups="customer")
+ * )
+ */
+
+ // @TODO : Les relations vers "vendor" sont potentiellement inutiles car un client n'est pas sensé avec accès
+// aux infos des utilisateurs des autres clients. Voir avec Laurent.
 
 #[ORM\Entity(repositoryClass: CustomerRepository::class)]
 class Customer

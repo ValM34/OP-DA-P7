@@ -11,7 +11,8 @@ use App\Entity\Product;
 use App\Entity\Customer;
 use App\Entity\Vendor;
 use App\Repository\CustomerRepository;
-use Symfony\Component\Serializer\SerializerInterface;
+use JMS\Serializer\SerializerInterface;
+use JMS\Serializer\SerializationContext;
 use Symfony\Component\Serializer\Context\Normalizer\ObjectNormalizerContextBuilder;
 use App\Service\CustomerServiceInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
@@ -28,17 +29,14 @@ class CustomerController extends AbstractController
   
   // GET CUSTOMERS BY VENDOR
   #[Route('/api/vendor', name: 'app_customer_get_all', methods: ['GET'])]
-  public function getCustomersByVendor(Request $request, TagAwareCacheInterface $cachePool, CustomerRepository $customerRepository, SerializerInterface $serializer): JsonResponse
+  public function getCustomersByVendor(Request $request, TagAwareCacheInterface $cachePool, CustomerRepository $customerRepository, SerializerInterface $serializer, SerializationContext $serializationContext): JsonResponse
   {
     $page = $request->get('page', 1);
     $limit = $request->get('limit', 3);
     $idCache = "getCustomersByVendor-" . $page . "-" . $limit;
     $jsonCustomers = $cachePool->get($idCache, function (ItemInterface $item) use ($customerRepository, $page, $limit, $serializer) {
       $item->tag("getCustomersByVendor");
-      $context = (new ObjectNormalizerContextBuilder())
-        ->withGroups('customers')
-        ->toArray()
-      ;
+      $context = SerializationContext::create()->setGroups(['customers']);
       $customerList = $this->customerRepository->findAllWithPagination($page, $limit, $this->getUser());
       
       return $serializer->serialize($customerList, 'json', $context);
@@ -49,15 +47,12 @@ class CustomerController extends AbstractController
 
   // GET CUSTOMER BY VENDOR
   #[Route('/api/customer/{id}', name: 'app_customer_get_one', methods: ['GET'])]
-  public function getCustomerByVendor(Request $request, Customer $customer, TagAwareCacheInterface $cachePool, SerializerInterface $serializer)
+  public function getCustomerByVendor(Request $request, Customer $customer, TagAwareCacheInterface $cachePool, SerializerInterface $serializer, SerializationContext $serializationContext)
   {
     $idCache = 'getCustomerByVendor-' . $customer->getId();
     $jsonCustomer = $cachePool->get($idCache, function (ItemInterface $item) use ($customer, $serializer) {
       $item->tag("getCustomerByVendor");
-      $context = (new ObjectNormalizerContextBuilder())
-        ->withGroups('customers')
-        ->toArray()
-      ;
+      $context = SerializationContext::create()->setGroups(['customers']);
       
       return $serializer->serialize($customer, 'json', $context);
     });
@@ -68,19 +63,17 @@ class CustomerController extends AbstractController
 
   // CREATE
   #[Route('/api/customer/add', name: 'app_customer_add', methods: ['POST'])]
-  public function create(Customer $customer, Request $request)
+  public function create(Customer $customer, Request $request, SerializationContext $serializationContext)
   {
     $customer = $this->serializer->deserialize($request->getContent(), Customer::class, 'json');
     $customer = $this->customerService->create($customer, $this->getUser());
-    $context = (new ObjectNormalizerContextBuilder())
-      ->withGroups('customer')
-      ->toArray()
-    ;
+    $context = SerializationContext::create()->setGroups(['customer']);
     $jsonCustomer = $this->serializer->serialize($customer, 'json', $context);
 
     return new JsonResponse($jsonCustomer, Response::HTTP_OK, [], true);
   }
 
+  // @TODO : Voir avec Laurent s'il faut ajouter de l'auto découvrabilité sur cette route
   // DELETE
   #[Route('/api/customer/delete/{id}', name: 'app_customer_delete', methods: ['DELETE'])]
   public function delete(Customer $customer)
