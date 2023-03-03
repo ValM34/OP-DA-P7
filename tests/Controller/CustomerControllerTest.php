@@ -50,10 +50,10 @@ class CustomerControllerTest extends WebTestCase
     // $this->assertSelectorTextContains('h2', 'Give your feedback');
   }
 
-  public function getCustomerId() // @TODO : Améliorer nom
+  public function getCustomerId() // @TODO : Améliorer nom + sert pour route testGetCustomerByVendor & testDelete
   {
     $client = $this->createAuthenticatedClient();
-    $client->request('GET', '/api/vendor');
+    $client->request('GET', '/api/vendor?page=1&limit=1');
     $this->assertResponseIsSuccessful();
     $this->assertJson($client->getResponse()->getContent());
     $responseData = json_decode($client->getResponse()->getContent(), true);
@@ -125,7 +125,9 @@ class CustomerControllerTest extends WebTestCase
   public function testDelete()
   {
     $client = $this->createAuthenticatedClient();
-    $client->request('GET', '/api/customer/delete' . $customerId);
+    $client->request('GET', '/api/customer/delete' . $this->getCustomerId());
+    $this->assertResponseIsSuccessful();
+    // @TODO : Voir si ce test est suffisant
   }
 }
 

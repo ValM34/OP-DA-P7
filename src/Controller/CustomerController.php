@@ -109,7 +109,6 @@ class CustomerController extends AbstractController
       
       return $serializer->serialize($customer, 'json', $context);
     });
-    
 
     return new JsonResponse($jsonCustomer, Response::HTTP_OK, [], true);
   }

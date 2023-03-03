@@ -46,7 +46,7 @@ class ProductControllerTest extends WebTestCase
   public function getProductId()
   {
     $client = $this->createAuthenticatedClient();
-    $client->request('GET', '/api/product/all');
+    $client->request('GET', '/api/product/all'); // @TODO : Je sais pas pourquoi quand je mets pas de limite ou quand la limite n'englobe pas tous les produits, l'id qui ressort et faux
     $this->assertResponseIsSuccessful();
     $this->assertJson($client->getResponse()->getContent());
     $responseData = json_decode($client->getResponse()->getContent(), true);
@@ -59,6 +59,7 @@ class ProductControllerTest extends WebTestCase
     $productId = $this->getProductId();
     $client = $this->createAuthenticatedClient();
     $client->request('GET', '/api/product/' . $productId);
+    $responseData = json_decode($client->getResponse()->getContent(), true);
     $this->assertResponseIsSuccessful();
     $this->assertJson($client->getResponse()->getContent());
     $responseData = json_decode($client->getResponse()->getContent(), true);

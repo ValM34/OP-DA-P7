@@ -63,6 +63,16 @@ class AppFixtures extends Fixture
       }
     }
 
+    $customer = new Customer();
+    $customer
+      ->setName('testDeleteRoute')
+      ->setSurname('surname')
+      ->setEmail('testDelete@route.com')
+      ->setUpdatedAt($date)
+      ->setCreatedAt($date)
+      ->setVendor($listVendor[0]);;
+    $manager->persist($customer);
+
     for ($i = 0; $i < 30; $i++) {
       $customer = new Customer();
       $customer
