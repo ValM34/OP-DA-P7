@@ -79,7 +79,6 @@ class CustomerController extends AbstractController
     return new JsonResponse($jsonCustomers, Response::HTTP_OK, [], true);
   }
 
-  // @TODO : n'importe quel vendeur peut voir n'importe quel client, ce n'est pas souhaitable, il faut le modifier
   /**
   * Cette méthode permet de récupérer les clients liés à un vendeur.
   *
@@ -102,6 +101,12 @@ class CustomerController extends AbstractController
   #[Route('/api/customer/{id}', name: 'app_customer_get_one', methods: ['GET'])]
   public function getCustomerByVendor(Request $request, Customer $customer, TagAwareCacheInterface $cachePool, SerializerInterface $serializer, SerializationContext $serializationContext)
   {
+    // @TODO : Demander à Laurent s'il est possible de mettre en cache l'erreur ou si ça causera des problèmes
+    if($this->getUser() !== $customer->getVendor()){
+      $jsonErrorMessage = $this->serializer->serialize(['message' => 'Vous n\'êtes pas autorisé à accéder à cet utilisateur'], 'json');
+
+      return new JsonResponse($jsonErrorMessage, Response::HTTP_FORBIDDEN, [], true);
+    }
     $idCache = 'getCustomerByVendor-' . $customer->getId();
     $jsonCustomer = $cachePool->get($idCache, function (ItemInterface $item) use ($customer, $serializer) {
       $item->tag("getCustomerByVendor");
