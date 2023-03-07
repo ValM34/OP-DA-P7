@@ -42,7 +42,7 @@ class CustomerService implements CustomerServiceInterface
   public function delete(Vendor $vendor, Customer $customer): JsonResponse
   {
     if($vendor !== $customer->getVendor()){
-      $jsonErrorMessage = $this->serializer->serialize(['message' => 'NOT AUTHORIZED'], 'json');
+      $jsonErrorMessage = $this->serializer->serialize(['message' => 'Non autorisé'], 'json');
 
       return new JsonResponse($jsonErrorMessage, Response::HTTP_FORBIDDEN, [], true);
     }

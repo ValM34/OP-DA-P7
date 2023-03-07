@@ -103,7 +103,7 @@ class CustomerController extends AbstractController
   {
     // @TODO : Demander à Laurent s'il est possible de mettre en cache l'erreur ou si ça causera des problèmes
     if($this->getUser() !== $customer->getVendor()){
-      $jsonErrorMessage = $this->serializer->serialize(['message' => 'NOT AUTHORIZED'], 'json');
+      $jsonErrorMessage = $this->serializer->serialize(['message' => 'Non autorisé'], 'json');
 
       return new JsonResponse($jsonErrorMessage, Response::HTTP_FORBIDDEN, [], true);
     }
