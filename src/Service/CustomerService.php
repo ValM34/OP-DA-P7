@@ -7,6 +7,9 @@ use App\Entity\Vendor;
 use \DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use JMS\Serializer\SerializerInterface;
+use Symfony\Component\HttpFoundation\Response;
 
 class CustomerService implements CustomerServiceInterface
 {
@@ -14,7 +17,8 @@ class CustomerService implements CustomerServiceInterface
 
   public function __construct(
     private EntityManagerInterface $entityManager,
-    private TagAwareCacheInterface $cache
+    private TagAwareCacheInterface $cache,
+    private SerializerInterface $serializer
   )
   {
     $this->dateTimeImmutable = new DateTimeImmutable();
@@ -35,11 +39,19 @@ class CustomerService implements CustomerServiceInterface
     return $customer;
   }
 
-  public function delete(Customer $customer)
+  public function delete(Vendor $vendor, Customer $customer): JsonResponse
   {
+    if($vendor !== $customer->getVendor()){
+      $jsonErrorMessage = $this->serializer->serialize(['message' => 'NOT AUTHORIZED'], 'json');
+
+      return new JsonResponse($jsonErrorMessage, Response::HTTP_FORBIDDEN, [], true);
+    }
+
     $this->cache->invalidateTags(['getCustomersByVendor', 'getCustomerByVendor']);
     $this->entityManager->remove($customer);
     $this->entityManager->flush();
-    // @TODO Peut-être retourner une réponse ici
+    $jsonErrorMessage = $this->serializer->serialize(['message' => 'Utilisateur supprimé'], 'json');
+
+    return new JsonResponse($jsonErrorMessage, Response::HTTP_OK, [], true);
   }
 }

@@ -103,7 +103,7 @@ class CustomerController extends AbstractController
   {
     // @TODO : Demander à Laurent s'il est possible de mettre en cache l'erreur ou si ça causera des problèmes
     if($this->getUser() !== $customer->getVendor()){
-      $jsonErrorMessage = $this->serializer->serialize(['message' => 'Vous n\'êtes pas autorisé à accéder à cet utilisateur'], 'json');
+      $jsonErrorMessage = $this->serializer->serialize(['message' => 'NOT AUTHORIZED'], 'json');
 
       return new JsonResponse($jsonErrorMessage, Response::HTTP_FORBIDDEN, [], true);
     }
@@ -149,8 +149,6 @@ class CustomerController extends AbstractController
     return new JsonResponse($jsonCustomer, Response::HTTP_OK, [], true);
   }
 
-  // @TODO : Je pense pas que j'ai vérifié si le client est lié au vendeur, ce qui est problématique  car un client non lié
-  // au vendeur pourrait être supprimé par un autre vendeur.
   /**
   * Cette méthode permet de supprimer un client lié à un vendeur.
   *
@@ -169,13 +167,10 @@ class CustomerController extends AbstractController
   * @param Request $request
   * @return JsonResponse
   */
-  // @TODO : Voir avec Laurent s'il faut ajouter de l'auto découvrabilité sur cette route
   // DELETE
   #[Route('/api/customer/delete/{id}', name: 'app_customer_delete', methods: ['DELETE'])]
   public function delete(Customer $customer)
   {
-    $this->customerService->delete($customer);
-
-    return new JsonResponse(null, Response::HTTP_NO_CONTENT);
+    return $this->customerService->delete($this->getUser(), $customer);
   }
 }
