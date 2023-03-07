@@ -16,6 +16,8 @@ use Symfony\Contracts\Cache\ItemInterface;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Nelmio\ApiDocBundle\Annotation\Security;
 use OpenApi\Annotations as OA;
+use App\Controller\Trait\statusSetterTrait;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ProductController extends AbstractController
 {
@@ -66,9 +68,9 @@ class ProductController extends AbstractController
     $jsonProductList = $cachePool->get($idCache, function (ItemInterface $item) use ($productRepository, $page, $limit, $serializer) {
       $item->tag("getAllProducts");
       $context = SerializationContext::create()->setGroups(['products']);
-      $customerList = $productRepository->findAllWithPagination($page, $limit, $this->getUser());
-      
-      return $serializer->serialize($customerList, 'json', $context);
+      $productList = $productRepository->findAllWithPagination($page, $limit, $this->getUser());
+
+      return $serializer->serialize($productList, 'json', $context);
     });
 
     return new JsonResponse($jsonProductList, Response::HTTP_OK, [], true);
@@ -101,6 +103,10 @@ class ProductController extends AbstractController
     $jsonProduct = $cachePool->get($idCache, function (ItemInterface $item) use ($product, $serializer) {
       $item->tag("getOneProduct");
       $context = SerializationContext::create()->setGroups(['product']);
+      dd('sefsdf');
+      if(!$product){
+        throw new NotFoundHttpException('La ressource demandée n\'a pas été trouvée.');
+      }
       
       return $serializer->serialize($product, 'json', $context);
     });

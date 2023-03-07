@@ -25,7 +25,7 @@ class AppFixtures extends Fixture
   public function load(ObjectManager $manager): void
   {
     $date = $this->dateTimeImmutable;
-    for($i = 0; $i < 50; $i++){
+    /*for($i = 0; $i < 50; $i++){
       $product = new Product();
       $product
         ->setName('product name' . $i)
@@ -35,7 +35,7 @@ class AppFixtures extends Fixture
         ->setCreatedAt($date)
       ;
       $manager->persist($product);
-    }
+    }*/
     
     for ($i = 0; $i < 10; $i++) {
       if ($i < 5) {
@@ -63,7 +63,7 @@ class AppFixtures extends Fixture
       }
     }
 
-    $customer = new Customer();
+    /*$customer = new Customer();
     $customer
       ->setName('testDeleteRoute')
       ->setSurname('surname')
@@ -83,7 +83,7 @@ class AppFixtures extends Fixture
         ->setCreatedAt($date)
         ->setVendor($listVendor[array_rand($listVendor)]);;
       $manager->persist($customer);
-    }
+    }*/
     $manager->flush();
   }
 }
