@@ -103,10 +103,6 @@ class ProductController extends AbstractController
     $jsonProduct = $cachePool->get($idCache, function (ItemInterface $item) use ($product, $serializer) {
       $item->tag("getOneProduct");
       $context = SerializationContext::create()->setGroups(['product']);
-      dd('sefsdf');
-      if(!$product){
-        throw new NotFoundHttpException('La ressource demandée n\'a pas été trouvée.');
-      }
       
       return $serializer->serialize($product, 'json', $context);
     });
