@@ -67,6 +67,6 @@ php bin/console doctrine:fixtures:load --env=test
 php bin/console cache:clear
 php bin/phpunit
 ```
-Il est important de lancer ces 3 commandes à chaque test pour que cela fonctionne correctement.  
+Il est important de lancer ces 3 commandes à chaque test pour que cela fonctionne correctement. 
 # Félicitation !  
 L'API devrait maintenant fonctionner correctement. Vous pouvez maintenant utiliser un outil comme Postman pour tester les routes.  
