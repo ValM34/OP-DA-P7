@@ -2,7 +2,7 @@ nelmio_api_doc:
     documentation:
         info:
             title: BileMo
-            description: API de BileMo
+            description: API de BileMo. Cette page référence toutes les routes de l'API.
             version: 1.0.0
         paths:
             /api/login_check:
@@ -12,7 +12,7 @@ nelmio_api_doc:
                     operationId: postCredentialsItem
                     summary: Permet d'obtenir le token JWT pour se logger.
                     requestBody:
-                        description: Crée un nouveau token JWT
+                        description: Crée un nouveau token JWT. Vous devez copier/coller le JWT pour ensuite cliquer sur le bouton "Authorize" et ajouter "bearer votreJWT" (sans guillemets).
                         content:
                             application/json:
                                 schema:
