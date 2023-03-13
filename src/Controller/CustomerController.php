@@ -63,7 +63,13 @@ class CustomerController extends AbstractController
   */
   // GET CUSTOMERS BY VENDOR
   #[Route('/api/vendor', name: 'app_customer_get_all', methods: ['GET'])]
-  public function getCustomersByVendor(Request $request, TagAwareCacheInterface $cachePool, CustomerRepository $customerRepository, SerializerInterface $serializer, SerializationContext $serializationContext): JsonResponse
+  public function getCustomersByVendor(
+    Request $request,
+    TagAwareCacheInterface $cachePool,
+    CustomerRepository $customerRepository,
+    SerializerInterface $serializer,
+    SerializationContext $serializationContext
+  ): JsonResponse
   {
     $page = $request->get('page', 1);
     $limit = $request->get('limit', 3);

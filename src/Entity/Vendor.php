@@ -10,6 +10,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use JMS\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\Ignore;
 use Hateoas\Configuration\Annotation as Hateoas;
 
 #[ORM\Entity(repositoryClass: VendorRepository::class)]
@@ -37,6 +38,7 @@ class Vendor implements UserInterface, PasswordAuthenticatedUserInterface
    * @var string The hashed password
    */
   #[ORM\Column]
+  #[Ignore]
   private ?string $password = null;
 
   #[ORM\OneToMany(mappedBy: 'vendor', targetEntity: Customer::class, orphanRemoval: true)]

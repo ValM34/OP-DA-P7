@@ -46,3 +46,4 @@ class ExceptionSubscriber implements EventSubscriberInterface
     }
   }
 }
+// @TODO utiliser les constantes pour les messages d'erreur exemple : Response::HTTP_constante
