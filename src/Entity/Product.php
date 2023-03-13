@@ -39,7 +39,7 @@ class Product
   #[Groups(['product', 'products'])]
   private ?string $name = null;
 
-  #[ORM\Column(length: 255)]
+  #[ORM\Column(length: 1500)]
   #[Groups(['product', 'products'])]
   private ?string $description = null;
 
