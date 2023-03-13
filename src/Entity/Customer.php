@@ -6,6 +6,7 @@ use App\Repository\CustomerRepository;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;
 use Hateoas\Configuration\Annotation as Hateoas;
+use Symfony\Component\Validator\Constraints as Assert;
 
  /**
  * @Hateoas\Relation(
@@ -50,27 +51,31 @@ class Customer
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
+    #[ORM\Column(type: 'integer')]
     #[Groups(['customers', 'customer'])]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 150, type: 'string')]
+    #[Assert\Length(min: 3, max: 150, minMessage: 'Votre prénom doit contenir au moins {{ limit }} caractères', maxMessage: 'Votre prénom ne doit pas dépasser {{ limit }} caractères')]
     #[Groups(['customers', 'customer'])]
     private ?string $name = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 150, type: 'string')]
+    #[Assert\Length(min: 3, max: 150, minMessage: 'Votre nom doit contenir au moins {{ limit }} caractères', maxMessage: 'Votre nom ne doit pas dépasser {{ limit }} caractères')]
     #[Groups(['customers', 'customer'])]
     private ?string $surname = null;
 
-    #[ORM\Column(length: 255, unique: true)]
+    #[ORM\Column(length: 180, unique: true, type: 'string')]
+    #[Assert\Email(message: 'The email {{ value }} is not a valid email.')]
+    #[Assert\Length(max: 180, maxMessage: 'Votre email doit contenir au moins {{ limit }} caractères')]
     #[Groups(['customers', 'customer'])]
     private ?string $email = null;
 
-    #[ORM\Column]
+    #[ORM\Column(type: 'datetime_immutable')]
     #[Groups(['customers', 'customer'])]
     private ?\DateTimeImmutable $updatedAt = null;
 
-    #[ORM\Column]
+    #[ORM\Column(type: 'datetime_immutable')]
     #[Groups(['customers', 'customer'])]
     private ?\DateTimeImmutable $createdAt = null;
 
