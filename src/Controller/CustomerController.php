@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\Customer;
+use App\Entity\Vendor;
 use App\Repository\CustomerRepository;
 use JMS\Serializer\SerializerInterface;
 use App\Service\CustomerServiceInterface;
@@ -47,11 +48,8 @@ class CustomerController extends AbstractController
   #[Route('/api/customer/{id}', name: 'app_customer_get_one', methods: ['GET'])]
   public function getCustomer(Customer $customer)
   {
-    if($this->getUser() !== $customer->getVendor()){
-      $jsonErrorMessage = $this->serializer->serialize(['message' => 'Non autorisé'], 'json');
-
-      return new JsonResponse($jsonErrorMessage, Response::HTTP_FORBIDDEN, [], true);
-    }
+    // check for "view" access: calls all voters
+    $this->denyAccessUnlessGranted('view', $customer);
     
     $jsonCustomer = $this->customerService->getCustomer($customer);
 
