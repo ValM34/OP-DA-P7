@@ -10,20 +10,16 @@ use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\Product;
 use App\Repository\ProductRepository;
 use JMS\Serializer\SerializerInterface;
-use JMS\Serializer\SerializationContext;
-use Symfony\Contracts\Cache\TagAwareCacheInterface;
-use Symfony\Contracts\Cache\ItemInterface;
 use Nelmio\ApiDocBundle\Annotation\Model;
-use Nelmio\ApiDocBundle\Annotation\Security;
 use OpenApi\Annotations as OA;
-use App\Controller\Trait\statusSetterTrait;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use App\Service\ProductServiceInterface;
 
 class ProductController extends AbstractController
 {
   public function __construct(
     private ProductRepository $productRepository,
-    private SerializerInterface $serializer
+    private SerializerInterface $serializer,
+    private ProductServiceInterface $productService
     )
   {}
 
@@ -60,18 +56,9 @@ class ProductController extends AbstractController
   */
   // GET ALL
   #[Route('/api/product/all', name: 'app_product_get_all', methods: 'GET')]
-  public function getAll(Request $request, SerializerInterface $serializer, TagAwareCacheInterface $cachePool, ProductRepository $productRepository, SerializationContext $serializationContext): JsonResponse
+  public function getAll(Request $request): JsonResponse
   {
-    $page = $request->get('page', 1);
-    $limit = $request->get('limit', 3);
-    $idCache = "getAllProducts-" . $page . "-" . $limit;
-    $jsonProductList = $cachePool->get($idCache, function (ItemInterface $item) use ($productRepository, $page, $limit, $serializer) {
-      $item->tag("getAllProducts");
-      $context = SerializationContext::create()->setGroups(['products']);
-      $productList = $productRepository->findAllWithPagination($page, $limit, $this->getUser());
-
-      return $serializer->serialize($productList, 'json', $context);
-    });
+    $jsonProductList = $this->productService->getAll($request, $this->getUser());
 
     return new JsonResponse($jsonProductList, Response::HTTP_OK, [], true);
   }
@@ -97,15 +84,9 @@ class ProductController extends AbstractController
   */
   // GET ONE
   #[Route('/api/product/{id}', name: 'app_product_get_one', methods: 'GET')]
-  public function getOne(Product $product, SerializerInterface $serializer, TagAwareCacheInterface $cachePool, SerializationContext $serializationContext): JsonResponse
+  public function getOne(Product $product): JsonResponse
   {
-    $idCache = 'getOneProduct-' . $product->getId();
-    $jsonProduct = $cachePool->get($idCache, function (ItemInterface $item) use ($product, $serializer) {
-      $item->tag("getOneProduct");
-      $context = SerializationContext::create()->setGroups(['product']);
-      
-      return $serializer->serialize($product, 'json', $context);
-    });
+    $jsonProduct = $this->productService->getOne($product);
 
     return new JsonResponse($jsonProduct, Response::HTTP_OK, [], true);
   }
