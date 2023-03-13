@@ -10,6 +10,9 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use JMS\Serializer\SerializerInterface;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Contracts\Cache\ItemInterface;
+use JMS\Serializer\SerializationContext;
+use Symfony\Component\HttpFoundation\Request;
 
 class CustomerService implements CustomerServiceInterface
 {
@@ -18,16 +21,30 @@ class CustomerService implements CustomerServiceInterface
   public function __construct(
     private EntityManagerInterface $entityManager,
     private TagAwareCacheInterface $cache,
-    private SerializerInterface $serializer
+    private SerializerInterface $serializer,
+    private TagAwareCacheInterface $cachePool
   )
   {
     $this->dateTimeImmutable = new DateTimeImmutable();
   }
 
-  public function create(Customer $customer, Vendor $vendor): ?Customer
+  public function getCustomer(Customer $customer): string
   {
+    $idCache = 'getCustomerByVendor-' . $customer->getId();
+    $jsonCustomer = $this->cachePool->get($idCache, function (ItemInterface $item) use ($customer) {
+      $item->tag("getCustomerByVendor");
+      $context = SerializationContext::create()->setGroups(['customers']);
+      
+      return $this->serializer->serialize($customer, 'json', $context);
+    });
+
+    return $jsonCustomer;
+  }
+
+  public function create(Request $request, Vendor $vendor): string
+  {
+    $customer = $this->serializer->deserialize($request->getContent(), Customer::class, 'json');
     $date = $this->dateTimeImmutable;
-    // @TODO gestion erreur : Faudra aussi gérer le cas où l'email existe déjà
     $customer
       ->setUpdatedAt($date)
       ->setCreatedAt($date)
@@ -35,8 +52,10 @@ class CustomerService implements CustomerServiceInterface
     ;
     $this->entityManager->persist($customer);
     $this->entityManager->flush();
+    $context = SerializationContext::create()->setGroups(['customer']);
+    $jsonCustomer = $this->serializer->serialize($customer, 'json', $context);
     
-    return $customer;
+    return $jsonCustomer;
   }
 
   public function delete(Vendor $vendor, Customer $customer): JsonResponse
