@@ -13,7 +13,7 @@ use App\Repository\CustomerRepository;
 use JMS\Serializer\SerializerInterface;
 use App\Service\CustomerServiceInterface;
 use Nelmio\ApiDocBundle\Annotation\Model;
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 use App\Service\VendorServiceInterface;
 
 class CustomerController extends AbstractController
@@ -26,37 +26,26 @@ class CustomerController extends AbstractController
   {}
 
   /**
-  * Cette méthode permet de récupérer les clients liés à un vendeur.
-  *
-  * @OA\Response(
-  *     response=200,
-  *     description="Retourne la liste des clients liés à un vendeur",
-  *     @OA\JsonContent(
-  *        type="array",
-  *        @OA\Items(ref=@Model(type=Vendor::class, groups={"customers"}))
-  *     )
-  * )
-  * @OA\Parameter(
-  *     name="page",
-  *     in="query",
-  *     description="La page que l'on veut récupérer",
-  *     @OA\Schema(type="int")
-  * )
-  *
-  * @OA\Parameter(
-  *     name="limit",
-  *     in="query",
-  *     description="Le nombre d'éléments que l'on veut récupérer",
-  *     @OA\Schema(type="int")
-  * )
-  * @OA\Tag(name="Customer")
-  *
-  * @param ProductRepository $productRepository
-  * @param SerializerInterface $serializer
-  * @param Request $request
-  * @return JsonResponse
-  */
-  // GET CUSTOMERS BY VENDOR
+   * GET ALL BY VENDOR
+   */
+  #[OA\Response(
+    response: 200,
+    description: "Retourne la liste des clients liés à un vendeur",
+    content: new OA\JsonContent(ref: new Model(type: Vendor::class, groups: ['customers']))
+  )]
+  #[OA\Parameter(
+    name: 'page',
+    in: 'query',
+    description: "La page que l'on veut récupérer",
+    schema: new OA\Schema(type: 'int')
+  )]
+  #[OA\Parameter(
+    name: 'limit',
+    in: 'query',
+    description: "Le nombre d'éléments que l'on veut récupérer",
+    schema: new OA\Schema(type: 'int')
+  )]
+  #[OA\Tag(name: "Customer")]
   #[Route('/api/customer/all', name: 'app_customer_get_all', methods: ['GET'])]
   public function getCustomersByVendor(Request $request): JsonResponse
   {
@@ -66,24 +55,14 @@ class CustomerController extends AbstractController
   }
 
   /**
-  * Cette méthode permet de récupérer les clients liés à un vendeur.
-  *
-  * @OA\Response(
-  *     response=200,
-  *     description="Retourne un client lié à un vendeur en fonction de l'identifiant du client.",
-  *     @OA\JsonContent(
-  *        type="array",
-  *        @OA\Items(ref=@Model(type=Customer::class, groups={"customers"}))
-  *     )
-  * )
-  * @OA\Tag(name="Customer")
-  *
-  * @param ProductRepository $productRepository
-  * @param SerializerInterface $serializer
-  * @param Request $request
-  * @return JsonResponse
-  */
-  // GET CUSTOMER BY VENDOR
+   * GET ONE
+   */
+  #[OA\Response(
+    response: 200,
+    description: "Retourne un client lié à un vendeur en fonction de l'identifiant du client.",
+    content: new OA\JsonContent(ref: new Model(type: Customer::class, groups: ['customers']))
+  )]
+  #[OA\Tag(name: "Customer")]
   #[Route('/api/customer/{id}', name: 'app_customer_get_one', methods: ['GET'])]
   public function getCustomer(Customer $customer)
   {
@@ -95,26 +74,15 @@ class CustomerController extends AbstractController
     return new JsonResponse($jsonCustomer, Response::HTTP_OK, [], true);
   }
 
-  // @TODO : Voir si je dois faire quelque chose de spécial sur cette route car ça va créer un utilisateur.
   /**
-  * Cette méthode permet d'ajouter un client lié à un vendeur.
-  *
-  * @OA\Response(
-  *     response=200,
-  *     description="Retourne le client nouvellement créé.",
-  *     @OA\JsonContent(
-  *        type="array",
-  *        @OA\Items(ref=@Model(type=Customer::class, groups={"customers"}))
-  *     )
-  * )
-  * @OA\Tag(name="Customer")
-  *
-  * @param ProductRepository $productRepository
-  * @param SerializerInterface $serializer
-  * @param Request $request
-  * @return JsonResponse
-  */
-  // CREATE
+   * CREATE
+   */
+  #[OA\Response(
+    response: 200,
+    description: "Retourne le client nouvellement créé.",
+    content: new OA\JsonContent(ref: new Model(type: Customer::class, groups: ['customers']))
+  )]
+  #[OA\Tag(name: "Customer")]
   #[Route('/api/customer/add', name: 'app_customer_add', methods: ['POST'])]
   public function create(Request $request)
   {
@@ -124,24 +92,14 @@ class CustomerController extends AbstractController
   }
 
   /**
-  * Cette méthode permet de supprimer un client lié à un vendeur.
-  *
-  * @OA\Response(
-  *     response=200,
-  *     description="Retourne le client nouvellement créé.",
-  *     @OA\JsonContent(
-  *        type="array",
-  *        @OA\Items(ref=@Model(type=Customer::class))
-  *     )
-  * )
-  * @OA\Tag(name="Customer")
-  *
-  * @param ProductRepository $productRepository
-  * @param SerializerInterface $serializer
-  * @param Request $request
-  * @return JsonResponse
-  */
-  // DELETE
+   * DELETE
+   */
+  #[OA\Response(
+    response: 200,
+    description: "Retourne un tableau vide.",
+    content: new OA\JsonContent(ref: new Model(type: Customer::class))
+  )]
+  #[OA\Tag(name: "Customer")]
   #[Route('/api/customer/delete/{id}', name: 'app_customer_delete', methods: ['DELETE'])]
   public function delete(Customer $customer)
   {
