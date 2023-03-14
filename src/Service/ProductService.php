@@ -10,6 +10,7 @@ use App\Repository\ProductRepository;
 use App\Entity\Vendor;
 use App\Entity\Product;
 use Symfony\Component\HttpFoundation\Request;
+use Knp\Component\Pager\PaginatorInterface;
 
 class ProductService implements ProductServiceInterface
 {
@@ -17,7 +18,8 @@ class ProductService implements ProductServiceInterface
   public function __construct(
     private TagAwareCacheInterface $cachePool,
     private SerializerInterface $serializer,
-    private ProductRepository $productRepository
+    private ProductRepository $productRepository,
+    private PaginatorInterface $paginator
   )
   {}
 
@@ -28,10 +30,14 @@ class ProductService implements ProductServiceInterface
     $idCache = "getAllProducts-" . $page . "-" . $limit;
     $jsonProductList = $this->cachePool->get($idCache, function (ItemInterface $item) use ($page, $limit, $vendor) {
       $item->tag("getAllProducts");
-      $context = SerializationContext::create()->setGroups(['products']);
-      $productList = $this->productRepository->findAllWithPagination($page, $limit, $vendor);
+      $context = SerializationContext::create()->setGroups([
+        'Default',
+        'items' => ['products']
+      ]);
+      $productList = $this->productRepository->findAll();
+      $productListPaginated = $this->paginator->paginate($productList, $page, $limit);
 
-      return $this->serializer->serialize($productList, 'json', $context);
+      return $this->serializer->serialize($productListPaginated, 'json', $context);
     });
 
     return $jsonProductList;
