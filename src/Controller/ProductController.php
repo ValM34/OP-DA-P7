@@ -13,6 +13,7 @@ use JMS\Serializer\SerializerInterface;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
 use App\Service\ProductServiceInterface;
+use Knp\Component\Pager\PaginatorInterface;
 
 class ProductController extends AbstractController
 {
@@ -89,5 +90,21 @@ class ProductController extends AbstractController
     $jsonProduct = $this->productService->getOne($product);
 
     return new JsonResponse($jsonProduct, Response::HTTP_OK, [], true);
+  }
+
+  #[Route('/api/test', name: 'app_test', methods: 'GET')]
+  public function test(Product $product, PaginatorInterface $paginator, Request $request)
+  {
+    $productList = $this->productRepository->findAll();
+
+    $pagination = $paginator->paginate(
+      $productList,
+      $request->query->getInt('page', 1),
+      $request->query->getInt('limit', 10)
+    );
+
+    $jsonProductList = $this->serializer->serialize($pagination, 'json');
+
+    return new JsonResponse($jsonProductList, Response::HTTP_OK, [], true);
   }
 }

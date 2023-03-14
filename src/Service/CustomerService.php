@@ -13,6 +13,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\Cache\ItemInterface;
 use JMS\Serializer\SerializationContext;
 use Symfony\Component\HttpFoundation\Request;
+use Knp\Component\Pager\PaginatorInterface;
+use App\Repository\CustomerRepository;
 
 class CustomerService implements CustomerServiceInterface
 {
@@ -22,10 +24,35 @@ class CustomerService implements CustomerServiceInterface
     private EntityManagerInterface $entityManager,
     private TagAwareCacheInterface $cache,
     private SerializerInterface $serializer,
-    private TagAwareCacheInterface $cachePool
+    private TagAwareCacheInterface $cachePool,
+    private PaginatorInterface $paginator,
+    private CustomerRepository $customerRepository
   )
   {
     $this->dateTimeImmutable = new DateTimeImmutable();
+  }
+
+  public function getCustomersByVendor(
+    Vendor $vendor,
+    Request $request
+  ): string
+  {
+    $page = $request->get('page', 1);
+    $limit = $request->get('limit', 3);
+    $idCache = "getCustomersByVendor-" . $page . "-" . $limit;
+    $jsonCustomers = $this->cachePool->get($idCache, function (ItemInterface $item) use ($page, $limit, $vendor) {
+      $item->tag("getCustomersByVendor");
+      $context = SerializationContext::create()->setGroups([
+        'Default',
+        'items' => ['customers']
+      ]);
+      $customerList = $this->customerRepository->findCustomersByVendor($page, $limit, $vendor);
+      $customerListPaginated = $this->paginator->paginate($customerList, $page, $limit);
+
+      return $this->serializer->serialize($customerListPaginated, 'json', $context);
+    });
+
+    return $jsonCustomers;
   }
 
   public function getCustomer(Customer $customer): string

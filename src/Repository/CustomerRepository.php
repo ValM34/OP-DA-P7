@@ -56,6 +56,18 @@ class CustomerRepository extends ServiceEntityRepository
       return $queryBuilder->getQuery()->getResult();
     }
 
+    public function findCustomersByVendor($page, $limit, Vendor $vendor)
+    {
+      $queryBuilder = $this->createQueryBuilder('c')
+        ->select('c', 'v')
+        ->leftJoin('c.vendor', 'v')
+        ->andWhere('v = :vendor')
+        ->setParameter('vendor', $vendor)
+      ;
+
+      return $queryBuilder->getQuery()->getResult();
+    }
+
 //    /**
 //     * @return Customer[] Returns an array of Customer objects
 //     */
