@@ -21,6 +21,7 @@
         "symfony/console": "6.2.*",
         "symfony/dotenv": "6.2.*",
         "symfony/flex": "^2",
+        "symfony/form": "6.2.*, !=6.2.7",
         "symfony/framework-bundle": "6.2.*",
         "symfony/property-access": "6.2.*",
         "symfony/property-info": "6.2.*",
@@ -87,7 +88,7 @@
     "extra": {
         "symfony": {
             "allow-contrib": false,
-            "require": "6.2.*"
+            "require": "6.2.*, !=6.2.7"
         }
     }
 }

@@ -14,7 +14,7 @@ use JMS\Serializer\SerializerInterface;
 use App\Service\CustomerServiceInterface;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
-use App\Service\VendorServiceInterface;
+use App\Form\CustomerType;
 
 class CustomerController extends AbstractController
 {
@@ -22,8 +22,8 @@ class CustomerController extends AbstractController
     private CustomerRepository $customerRepository,
     private SerializerInterface $serializer,
     private CustomerServiceInterface $customerService
-  )
-  {}
+  ) {
+  }
 
   /**
    * GET ALL BY VENDOR
@@ -68,7 +68,7 @@ class CustomerController extends AbstractController
   {
     // check for "view" access: calls all voters
     $this->denyAccessUnlessGranted('view', $customer);
-    
+
     $jsonCustomer = $this->customerService->getCustomer($customer);
 
     return new JsonResponse($jsonCustomer, Response::HTTP_OK, [], true);
@@ -77,6 +77,11 @@ class CustomerController extends AbstractController
   /**
    * CREATE
    */
+  #[OA\RequestBody(
+    content: new OA\JsonContent(
+      ref: new Model(type: Customer::class, groups: ['nelmioCreateCustomer'])
+    )
+  )]
   #[OA\Response(
     response: 200,
     description: "Retourne le client nouvellement créé.",
@@ -86,9 +91,22 @@ class CustomerController extends AbstractController
   #[Route('/api/customer/add', name: 'app_customer_add', methods: ['POST'])]
   public function create(Request $request)
   {
-    $jsonCustomer = $this->customerService->create($request, $this->getUser());
+    $customer = new Customer();
+    $form = $this->createForm(CustomerType::class, $customer, [
+      'csrf_protection' => false,
+    ]);
+    $data = json_decode($request->getContent(), true);
+    $form->submit($data);
 
-    return new JsonResponse($jsonCustomer, Response::HTTP_OK, [], true);
+    if ($form->isSubmitted() && $form->isValid()) {
+      $jsonCustomer = $this->customerService->create($request, $this->getUser(), $customer);
+
+      return new JsonResponse($jsonCustomer, Response::HTTP_OK, [], true);
+    }
+
+    $jsonErrorMessage = $this->serializer->serialize(['message' => 'Requête invalide'], 'json');
+
+    return new JsonResponse($jsonErrorMessage, Response::HTTP_FORBIDDEN, [], true);
   }
 
   /**
