@@ -57,18 +57,18 @@ class Customer
 
     #[ORM\Column(length: 150, type: 'string')]
     #[Assert\Length(min: 3, max: 150, minMessage: 'Votre prénom doit contenir au moins {{ limit }} caractères', maxMessage: 'Votre prénom ne doit pas dépasser {{ limit }} caractères')]
-    #[Groups(['customers', 'customer'])]
+    #[Groups(['customers', 'customer', 'nelmioCreateCustomer'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 150, type: 'string')]
     #[Assert\Length(min: 3, max: 150, minMessage: 'Votre nom doit contenir au moins {{ limit }} caractères', maxMessage: 'Votre nom ne doit pas dépasser {{ limit }} caractères')]
-    #[Groups(['customers', 'customer'])]
+    #[Groups(['customers', 'customer', 'nelmioCreateCustomer'])]
     private ?string $surname = null;
 
     #[ORM\Column(length: 180, unique: true, type: 'string')]
     #[Assert\Email(message: 'The email {{ value }} is not a valid email.')]
     #[Assert\Length(max: 180, maxMessage: 'Votre email doit contenir au moins {{ limit }} caractères')]
-    #[Groups(['customers', 'customer'])]
+    #[Groups(['customers', 'customer', 'nelmioCreateCustomer'])]
     private ?string $email = null;
 
     #[ORM\Column(type: 'datetime_immutable')]

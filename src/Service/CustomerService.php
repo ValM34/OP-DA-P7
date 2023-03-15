@@ -15,6 +15,7 @@ use JMS\Serializer\SerializationContext;
 use Symfony\Component\HttpFoundation\Request;
 use Knp\Component\Pager\PaginatorInterface;
 use App\Repository\CustomerRepository;
+use Symfony\Component\Form\FormInterface;
 
 class CustomerService implements CustomerServiceInterface
 {
@@ -68,15 +69,15 @@ class CustomerService implements CustomerServiceInterface
     return $jsonCustomer;
   }
 
-  public function create(Request $request, Vendor $vendor): string
+  public function create(Request $request, Vendor $vendor, Customer $customer): string
   {
-    $customer = $this->serializer->deserialize($request->getContent(), Customer::class, 'json');
     $date = $this->dateTimeImmutable;
     $customer
       ->setUpdatedAt($date)
       ->setCreatedAt($date)
       ->setVendor($vendor)
     ;
+
     $this->entityManager->persist($customer);
     $this->entityManager->flush();
     $context = SerializationContext::create()->setGroups(['customer']);
