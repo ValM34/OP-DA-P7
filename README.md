@@ -28,9 +28,17 @@ php bin/console doctrine:migrations:migrate
 ```bash
 php bin/console doctrine:fixtures:load
 ```
-Vous avez maintenant accès à la page 127.0.0.1:8000/api/doc qui vous donne accès à la documentation des routes de l'application.
-La première chose à faire sera de vous connecter. Pour se faire, appuyez sur le bouton "Authorize" en haut à droite. Un utilisateur par défaut est utilisé (username: e@mail0.fr, password: password). Si vous n'avez pas chargé de fixtures, cela ne fonctionnera pas directement. Il faudra d'abord créer cet utilisateur. Ces credentials ne doivent cependant JAMAIS être correctes pour un environnement de production. Vous pouvez modifier ces informations dans config/packages/nelmio_api_doc.yaml.  
-En cliquant sur Authorize, vous pouvez voir qu'on vous demande une valeur à remplir. Vous allez devoir d'abord générer un JsonWebToken. Pour se faire, allez sur la route /api/login_check, cliquez sur "Try it out" puis "execute". Vous allez recevoir en réponse un token. Copiez-collez le jwt sans le guillemets et re-cliquez sur "Authorize". Rentrez "bearer [votre JsonWebToken]". Vous êtes maintenant connecté. Vous pouvez maintenant accéder à toutes les routes de l'application. Il est important de comprendre que sans les données de test, la documentation ne pourra pas fonctionner. Vous pourrez supprimer ces données à tout moment si vous en avez besoin.  
+## La documentation
+- Vous avez maintenant accès à l'API et nottamment à la page 127.0.0.1:8000/api/doc qui vous donne accès à la documentation des routes de l'application.
+- La première chose à faire sera de vous connecter. Pour se faire, appuyez sur le bouton "Authorize" en haut à droite. Un utilisateur par défaut est utilisé (username: e@mail0.fr, password: password). 
+- Si vous n'avez pas chargé de fixtures, cela ne fonctionnera pas directement. Il faudra d'abord créer cet utilisateur. 
+- Vous pouvez modifier ces informations dans config/packages/nelmio_api_doc.yaml.  
+- Ces credentials ne doivent cependant JAMAIS être correctes pour un environnement de production. 
+- En cliquant sur Authorize, vous pouvez voir qu'on vous demande une valeur à remplir. Vous allez devoir d'abord générer un JsonWebToken. 
+- Allez sur la route /api/login_check, cliquez sur "Try it out" puis "execute". Vous allez recevoir en réponse un token. 
+- Copiez-collez le jwt sans le guillemets et re-cliquez sur "Authorize". Rentrez "bearer [votre JsonWebToken]". Vous êtes maintenant connecté. 
+- Vous pouvez maintenant accéder à toutes les routes de l'application. Il est important de comprendre que sans les données de test, la documentation ne pourra pas fonctionner. 
+- Vous pourrez supprimer ces données à tout moment si vous en avez besoin.  
 # Les tests fonctionnels  
 Pour effectuer des tests fonctionnels, vous devrez créer une base de données de test.  
 Pour se faire, commencez par créer un fichier .env.test à la racine de votre projet.  
