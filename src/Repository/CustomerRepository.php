@@ -40,8 +40,6 @@ class CustomerRepository extends ServiceEntityRepository
         }
     }
 
-    // @TODO j'arrive pas à avoir le vendor dans le résultat, sauf quand je mets le groupe customer mais 
-    // ça rend le vendor autant de fois que de résultat
     public function findAllWithPagination($page, $limit, Vendor $vendor)
     {
       $queryBuilder = $this->createQueryBuilder('c')
@@ -67,29 +65,4 @@ class CustomerRepository extends ServiceEntityRepository
 
       return $queryBuilder->getQuery()->getResult();
     }
-
-//    /**
-//     * @return Customer[] Returns an array of Customer objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('c')
-//            ->andWhere('c.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('c.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
-
-//    public function findOneBySomeField($value): ?Customer
-//    {
-//        return $this->createQueryBuilder('c')
-//            ->andWhere('c.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
 }

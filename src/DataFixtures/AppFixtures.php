@@ -38,29 +38,16 @@ class AppFixtures extends Fixture
     }
     
     for ($i = 0; $i < 10; $i++) {
-      if ($i < 5) {
-        $vendor = new Vendor();
-        $vendor
-          ->setName('Name' . $i)
-          ->setEmail('e@mail' . $i . '.fr')
-          ->setRoles(["ROLE_USER"])
-          ->setPassword($this->userPasswordHasher->hashPassword($vendor, "password"))
-          ->setUpdatedAt($date)
-          ->setCreatedAt($date);
-        $manager->persist($vendor);
-        $listVendor[] = $vendor;
-      } else {
-        $vendor = new Vendor();
-        $vendor
-          ->setName('Name' . $i)
-          ->setEmail('e@mail' . $i . '.fr')
-          ->setRoles(["ROLE_ADMIN"])
-          ->setPassword($this->userPasswordHasher->hashPassword($vendor, "password"))
-          ->setUpdatedAt($date)
-          ->setCreatedAt($date);
-        $manager->persist($vendor);
-        $listVendor[] = $vendor;
-      }
+      $vendor = new Vendor();
+      $vendor
+        ->setName('Name' . $i)
+        ->setEmail('e@mail' . $i . '.fr')
+        ->setRoles(["ROLE_USER"])
+        ->setPassword($this->userPasswordHasher->hashPassword($vendor, "password"))
+        ->setUpdatedAt($date)
+        ->setCreatedAt($date);
+      $manager->persist($vendor);
+      $listVendor[] = $vendor;
     }
 
     $customer = new Customer();
