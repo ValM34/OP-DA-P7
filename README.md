@@ -72,7 +72,7 @@ openssl rsa -pubout -in config/jwt/private-test.pem -out config/jwt/public-test.
 Vous pouvez maintenant lancer les tests :  
 ```bash
 php bin/console doctrine:fixtures:load --env=test
-php bin/console cache:clear
+php bin/console cache:clear --env=test
 php bin/phpunit
 ```
 Il est important de lancer ces 3 commandes à chaque test pour que cela fonctionne correctement. 
