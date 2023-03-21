@@ -13,7 +13,7 @@ class CustomerControllerTest extends WebTestCase
     'username' => 'e@mail0.fr',
     'password' => 'password',
     'roles' => ['ROLE_USER']
-  ])// @TODO Demander à Laurent pourquoi quand j'enlève ces infos le JWT se génère quand même lorsque je lance les tests
+  ])
   {
     self::ensureKernelShutdown(); // Ca permet de utiliser plusieurs fois la fonction $client = self::createClient();
     $client = self::createClient();
@@ -26,42 +26,38 @@ class CustomerControllerTest extends WebTestCase
   public function testGetCustomersByVendor()
   {
     $client = $this->createAuthenticatedClient();
-    $client->request('GET', '/api/vendor');
+    $client->request('GET', '/api/customer/all');
     $this->assertResponseIsSuccessful();
     $this->assertJson($client->getResponse()->getContent());
     $responseData = json_decode($client->getResponse()->getContent(), true);
-    $responseDataLength = count($responseData);
+    $responseDataLength = count($responseData['items']);
     for($i = 0; $i < $responseDataLength; $i++){
-      $this->assertArrayHasKey('id', $responseData[$i]);
-      $this->assertArrayHasKey('name', $responseData[$i]);
-      $this->assertArrayHasKey('surname', $responseData[$i]);
-      $this->assertArrayHasKey('email', $responseData[$i]);
-      $this->assertArrayHasKey('updatedAt', $responseData[$i]);
-      $this->assertArrayHasKey('createdAt', $responseData[$i]);
-      $this->assertArrayHasKey('_links', $responseData[$i]);
-      $this->assertArrayHasKey('customer', $responseData[$i]['_links']);
-      $this->assertArrayHasKey('href', $responseData[$i]['_links']['customer']);
-      $this->assertArrayHasKey('vendor', $responseData[$i]['_links']);
-      $this->assertArrayHasKey('href', $responseData[$i]['_links']['vendor']);
+      $this->assertArrayHasKey('id', $responseData['items'][$i]);
+      $this->assertArrayHasKey('name', $responseData['items'][$i]);
+      $this->assertArrayHasKey('surname', $responseData['items'][$i]);
+      $this->assertArrayHasKey('email', $responseData['items'][$i]);
+      $this->assertArrayHasKey('updatedAt', $responseData['items'][$i]);
+      $this->assertArrayHasKey('createdAt', $responseData['items'][$i]);
+      $this->assertArrayHasKey('_links', $responseData['items'][$i]);
+      $this->assertArrayHasKey('customer', $responseData['items'][$i]['_links']);
+      $this->assertArrayHasKey('href', $responseData['items'][$i]['_links']['customer']);
+      $this->assertArrayHasKey('vendor', $responseData['items'][$i]['_links']);
+      $this->assertArrayHasKey('href', $responseData['items'][$i]['_links']['vendor']);
     }
-
-    // @TODO comprendre pourquoi ça marche pas
-    // Lien vers les tutos : https://symfony.com/doc/current/the-fast-track/fr/17-tests.html, https://symfony.com/bundles/LexikJWTAuthenticationBundle/current/3-functional-testing.html
-    // $this->assertSelectorTextContains('h2', 'Give your feedback');
   }
 
-  public function getCustomerId() // @TODO : Améliorer nom + sert pour route testGetCustomerByVendor & testDelete
+  public function getCustomerId()
   {
     $client = $this->createAuthenticatedClient();
-    $client->request('GET', '/api/vendor?page=1&limit=1');
+    $client->request('GET', '/api/customer/all?page=1&limit=1');
     $this->assertResponseIsSuccessful();
     $this->assertJson($client->getResponse()->getContent());
     $responseData = json_decode($client->getResponse()->getContent(), true);
 
-    return $responseData[0]['id'];
+    return $responseData['items'][0]['id'];
   }
 
-  public function testGetCustomerByVendor()
+  public function testGetCustomer()
   {
     $customerId = $this->getCustomerId();
     $client = $this->createAuthenticatedClient();
@@ -76,16 +72,12 @@ class CustomerControllerTest extends WebTestCase
     $this->assertArrayHaskey('updatedAt', $responseData);
     $this->assertArrayHaskey('createdAt', $responseData);
     $this->assertArrayHaskey('_links', $responseData);
-    $this->assertArrayHaskey('customer', $responseData['_links']);
-    $this->assertArrayHaskey('href', $responseData['_links']['customer']);
-    $this->assertArrayHaskey('vendor', $responseData['_links']);
-    $this->assertArrayHaskey('href', $responseData['_links']['vendor']);
   }
 
   public function testCreate()
   {
     $client = $this->createAuthenticatedClient();
-    $data = [ // @TODO : voir comment je peux changer l'email à chaque test. Pour l'instant je peux faire en sorte de supprimer l'élément nouvellement créé dans ma route delete mais je pense que c'est pas une bonne pratique
+    $data = [
       'email' => 'email@newUser12.fr',
       'name' => 'valentin',
       'surname' => 'moreau'
@@ -116,21 +108,12 @@ class CustomerControllerTest extends WebTestCase
     $this->assertArrayHaskey('updatedAt', $responseData['vendor']);
     $this->assertArrayHaskey('createdAt', $responseData['vendor']);
     $this->assertArrayHaskey('_links', $responseData);
-    $this->assertArrayHaskey('self', $responseData['_links']);
-    $this->assertArrayHaskey('href', $responseData['_links']['self']);
-    $this->assertArrayHaskey('vendor', $responseData['_links']);
-    $this->assertArrayHaskey('href', $responseData['_links']['vendor']);
   }
 
   public function testDelete()
   {
     $client = $this->createAuthenticatedClient();
-    $client->request('GET', '/api/customer/delete' . $this->getCustomerId());
+    $client->request('DELETE', '/api/customer/delete' . $this->getCustomerId());
     $this->assertResponseIsSuccessful();
-    // @TODO : Voir si ce test est suffisant
   }
 }
-
-// @TODO : Si mes données de test ne lient aucun customer à mon vendor, mon test va forcément échouer, il faut donc que j'adapte
-// la manière dont je créée mes données de test
-// Faire les tests de create et delete

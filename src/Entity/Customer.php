@@ -43,9 +43,6 @@ use Symfony\Component\Validator\Constraints as Assert;
  * )
  */
 
- // @TODO : Les relations vers "vendor" sont potentiellement inutiles car un client n'est pas sensé avec accès
-// aux infos des utilisateurs des autres clients. Voir avec Laurent.
-
 #[ORM\Entity(repositoryClass: CustomerRepository::class)]
 class Customer
 {

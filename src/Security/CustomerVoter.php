@@ -35,18 +35,14 @@ class CustomerVoter extends Voter
       return false;
     }
 
-    // you know $subject is a Customer object, thanks to `supports()`
-    /** @var Customer $customer */
-    $customer = $subject;
-
     return match ($attribute) {
-      self::VIEW => $this->canView($customer, $vendor),
+      self::VIEW => $this->canView($subject, $vendor),
       default => throw new \LogicException('This code should not be reached!')
     };
   }
 
   private function canView(Customer $customer, Vendor $vendor): bool
   {
-    return $vendor === $customer->getVendor();
+    return $vendor->getId() === $customer->getVendor()->getId();
   }
 }

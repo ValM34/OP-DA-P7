@@ -99,6 +99,6 @@ class CustomerService implements CustomerServiceInterface
     $this->entityManager->flush();
     $jsonErrorMessage = $this->serializer->serialize(['message' => 'Utilisateur supprimé'], 'json');
 
-    return new JsonResponse($jsonErrorMessage, Response::HTTP_OK, [], true);
+    return new JsonResponse($jsonErrorMessage, Response::HTTP_NO_CONTENT, [], true);
   }
 }
