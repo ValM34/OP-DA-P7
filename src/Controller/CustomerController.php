@@ -64,7 +64,7 @@ class CustomerController extends AbstractController
   )]
   #[OA\Tag(name: "Customer")]
   #[Route('/api/customer/{id}', name: 'app_customer_get_one', methods: ['GET'])]
-  public function getCustomer(Customer $customer)
+  public function getCustomer(Customer $customer): JsonResponse
   {
     // check for "view" access: calls all voters
     $this->denyAccessUnlessGranted('view', $customer);
@@ -89,7 +89,7 @@ class CustomerController extends AbstractController
   )]
   #[OA\Tag(name: "Customer")]
   #[Route('/api/customer/add', name: 'app_customer_add', methods: ['POST'])]
-  public function create(Request $request)
+  public function create(Request $request): JsonResponse
   {
     $customer = new Customer();
     $form = $this->createForm(CustomerType::class, $customer, [
@@ -119,7 +119,7 @@ class CustomerController extends AbstractController
   )]
   #[OA\Tag(name: "Customer")]
   #[Route('/api/customer/delete/{id}', name: 'app_customer_delete', methods: ['DELETE'])]
-  public function delete(Customer $customer)
+  public function delete(Customer $customer): JsonResponse
   {
     return $this->customerService->delete($this->getUser(), $customer);
   }
