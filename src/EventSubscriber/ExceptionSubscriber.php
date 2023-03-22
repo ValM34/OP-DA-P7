@@ -27,7 +27,7 @@ class ExceptionSubscriber implements EventSubscriberInterface
     ];
   }
 
-  public function onNotFoundException(ExceptionEvent $event)
+  public function onNotFoundException(ExceptionEvent $event): void
   {
     $exception = $event->getThrowable();
     if ($exception instanceof NotFoundHttpException) {
@@ -36,7 +36,7 @@ class ExceptionSubscriber implements EventSubscriberInterface
     }
   }
 
-  public function uniqueConstraintViolationException(ExceptionEvent $event)
+  public function uniqueConstraintViolationException(ExceptionEvent $event): void
   {
     $exception = $event->getThrowable();
     if ($exception instanceof UniqueConstraintViolationException) {

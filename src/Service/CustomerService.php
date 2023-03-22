@@ -47,7 +47,7 @@ class CustomerService implements CustomerServiceInterface
         'Default',
         'items' => ['customers']
       ]);
-      $customerList = $this->customerRepository->findCustomersByVendor($page, $limit, $vendor);
+      $customerList = $this->customerRepository->findCustomersByVendor($vendor);
       $customerListPaginated = $this->paginator->paginate($customerList, $page, $limit);
 
       return $this->serializer->serialize($customerListPaginated, 'json', $context);

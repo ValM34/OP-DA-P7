@@ -40,21 +40,7 @@ class CustomerRepository extends ServiceEntityRepository
         }
     }
 
-    public function findAllWithPagination($page, $limit, Vendor $vendor)
-    {
-      $queryBuilder = $this->createQueryBuilder('c')
-        ->select('c', 'v')
-        ->leftJoin('c.vendor', 'v')
-        ->andWhere('v = :vendor')
-        ->setParameter('vendor', $vendor)
-        ->setFirstResult(($page - 1) * $limit)
-        ->setMaxResults($limit)
-      ;
-
-      return $queryBuilder->getQuery()->getResult();
-    }
-
-    public function findCustomersByVendor($page, $limit, Vendor $vendor)
+    public function findCustomersByVendor(Vendor $vendor): array
     {
       $queryBuilder = $this->createQueryBuilder('c')
         ->select('c', 'v')
